@@ -1,5 +1,5 @@
 {
-	"name": "jse",
+	"name": "js-experiment",
 	"version": "1.0.0",
 	"description": "experiment quickly with javascript without node modules",
 	"main": "dist/index.js",
