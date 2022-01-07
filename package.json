@@ -6,7 +6,7 @@
 	"scripts": {
 		"start:dev": "ts-node-dev ./src/cli/index.ts",
 		"start": "node ./dist/cli/index.js",
-		"test": "jest"
+		"test": ""
 	},
 	"keywords": [
 		"node_modules",
