@@ -3,6 +3,9 @@
 	"version": "1.0.2",
 	"description": "experiment quickly with javascript without node modules",
 	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"start:dev": "ts-node-dev ./src/cli/index.ts",
 		"start": "node ./dist/cli/index.js",
@@ -14,6 +17,7 @@
 		"cache",
 		"bundling"
 	],
+	"bin": "dist/index.js",
 	"author": "Henry Ansah",
 	"license": "ISC",
 	"devDependencies": {
