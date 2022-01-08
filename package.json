@@ -9,6 +9,7 @@
 	"scripts": {
 		"start:dev": "ts-node-dev ./src/cli/index.ts",
 		"start": "node ./dist/cli/index.js",
+		"publish": "git add . && git commit -m 'changes' && np",
 		"test": ""
 	},
 	"keywords": [

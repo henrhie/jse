@@ -28,7 +28,10 @@ const resolverPlugin: PluginFactoryType = () => {
 					}
 
 					return {
-						path: path.join(process.cwd(), path.dirname(args.path)),
+						path: path.join(
+							args.resolveDir,
+							args.path + (!args.path.endsWith('.js') ? '.js' : '')
+						),
 						namespace: 'file',
 					};
 				}
@@ -42,13 +45,6 @@ const resolverPlugin: PluginFactoryType = () => {
 				return {
 					namespace: 'unpkg',
 					path: `https://unpkg.com/${args.path}`,
-				};
-			});
-
-			build.onResolve({ filter: /.*/, namespace: 'node-file' }, (args) => {
-				return {
-					path: args.path,
-					namespace: 'file',
 				};
 			});
 		},
