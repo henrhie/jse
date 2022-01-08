@@ -27,13 +27,13 @@ const resolverPlugin = () => {
                         namespace: 'file',
                     };
                 }
-                // if (builtins.includes(args.path)) {
-                // 	console.log('===============>called=========>', args);
-                // 	return {
-                // 		path: require.resolve(args.path, { paths: [args.resolveDir] }),
-                // 		namespace: 'node-file',
-                // 	};
-                // }
+                if (builtins.includes(args.path)) {
+                    console.log('===============>called=========>', args);
+                    return {
+                        path: require.resolve(args.path, { paths: [args.resolveDir] }),
+                        namespace: 'node-file',
+                    };
+                }
                 return {
                     namespace: 'unpkg',
                     path: `https://unpkg.com/${args.path}`,

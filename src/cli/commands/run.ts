@@ -17,7 +17,7 @@ export const runCommand = new Command('run')
 		'output.js'
 	)
 	.action(({ input, output }: { input: string; output: string }) => {
-		console.log('dir: ', process.cwd());
+		console.log('dir: ', input);
 		esbuild
 			.build({
 				entryPoints: [input],

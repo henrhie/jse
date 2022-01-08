@@ -25,8 +25,8 @@ const loaderPlugin: PluginFactoryType = () => {
 			build.onLoad({ filter: /.*/, namespace: 'node-file' }, async (args) => {
 				return {
 					contents: `
-        import path from ${JSON.stringify(args.path)}
-        try { module.exports = require(path) }
+        import ${args.path} from ${JSON.stringify(args.path)}
+        try { module.exports = require(${args.path}) }
         catch {}
       `,
 				};

@@ -31,8 +31,8 @@ const loaderPlugin = () => {
             build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => __awaiter(this, void 0, void 0, function* () {
                 return {
                     contents: `
-        import path from ${JSON.stringify(args.path)}
-        try { module.exports = require(path) }
+        import ${args.path} from ${JSON.stringify(args.path)}
+        try { module.exports = require(${args.path}) }
         catch {}
       `,
                 };

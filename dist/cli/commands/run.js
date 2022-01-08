@@ -33,7 +33,7 @@ exports.runCommand = new commander_1.Command('run')
     .option('-i, --input <string>', 'entry file for you experimental javascript program', 'index.js')
     .option('-o, --output <string>', 'output file for your experimental javascript program', 'output.js')
     .action(({ input, output }) => {
-    console.log('dir: ', process.cwd());
+    console.log('dir: ', input);
     esbuild
         .build({
         entryPoints: [input],
