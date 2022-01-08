@@ -15,6 +15,7 @@ const loaderPlugin: PluginFactoryType = () => {
 				const filename = new URL(args.path).pathname.split('/')[
 					paths.length - 1
 				];
+				console.log('cache part called======');
 				const cachedResult = await cache.retrieveFile(filename);
 				if (cachedResult) {
 					return {
@@ -25,6 +26,7 @@ const loaderPlugin: PluginFactoryType = () => {
 			build.onLoad(
 				{ filter: /^https?:\/\//, namespace: 'unpkg' },
 				async (args) => {
+					console.log('fetch part called======');
 					const { data, request } = await axios.get<string>(args.path);
 					await cache.writeFile(data, request.path);
 					const chunk: esbuild.OnLoadResult = {

@@ -17,6 +17,14 @@ const path_1 = __importDefault(require("path"));
 const CACHE_DIR = 'cache';
 exports.default = new (class Cache {
     constructor() {
+        this.writeFileVersion = (versionName) => __awaiter(this, void 0, void 0, function* () {
+            const filename = this.mapVersionNameTofilename(versionName);
+            let versionCache = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
+                encoding: 'utf-8',
+            }));
+            versionCache = Object.assign(Object.assign({}, versionCache), { [filename]: versionName });
+            yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), JSON.stringify(versionCache), { encoding: 'utf-8' });
+        });
         this.writeFile = (file_content, path_) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const version_name = this.mapPathToVersionName(path_);
@@ -29,6 +37,21 @@ exports.default = new (class Cache {
                 console.error(error.message);
             }
         });
+        this.readFileVersion = (filename) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield promises_1.default.mkdir(CACHE_DIR);
+                yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), '{}');
+            }
+            catch (error) {
+                if (error.message === 'EEXIST') {
+                    return;
+                }
+            }
+            const version_cache_ = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
+                encoding: 'utf-8',
+            }));
+            return version_cache_[filename];
+        });
         this.retrieveFile = (filename) => __awaiter(this, void 0, void 0, function* () {
             const version_name = yield this.readFileVersion(filename);
             if (!version_name) {
@@ -36,7 +59,7 @@ exports.default = new (class Cache {
             }
             let data;
             try {
-                data = yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, filename), {
+                data = yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, version_name), {
                     encoding: 'utf-8',
                 });
             }
@@ -44,20 +67,6 @@ exports.default = new (class Cache {
                 console.error(error.message);
             }
             return data;
-        });
-        this.writeFileVersion = (versionName) => __awaiter(this, void 0, void 0, function* () {
-            const filename = this.mapPathToVersionName(versionName);
-            let versionCache = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, versionName), {
-                encoding: 'utf-8',
-            }));
-            versionCache = Object.assign(Object.assign({}, versionCache), { filename: versionName });
-            yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), JSON.stringify(versionCache), { encoding: 'utf-8' });
-        });
-        this.readFileVersion = (filename) => __awaiter(this, void 0, void 0, function* () {
-            const version_cache_ = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
-                encoding: 'utf-8',
-            }));
-            return version_cache_[filename];
         });
         this.mapPathToVersionName = (path) => {
             const _data_ = [];

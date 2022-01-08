@@ -23,6 +23,7 @@ const loaderPlugin = () => {
                 // if the file is cached, then return it.
                 const paths = new URL(args.path).pathname.split('/');
                 const filename = new URL(args.path).pathname.split('/')[paths.length - 1];
+                console.log('cache part called======');
                 const cachedResult = yield cache_1.default.retrieveFile(filename);
                 if (cachedResult) {
                     return {
@@ -31,6 +32,7 @@ const loaderPlugin = () => {
                 }
             }));
             build.onLoad({ filter: /^https?:\/\//, namespace: 'unpkg' }, (args) => __awaiter(this, void 0, void 0, function* () {
+                console.log('fetch part called======');
                 const { data, request } = yield axios_1.default.get(args.path);
                 yield cache_1.default.writeFile(data, request.path);
                 const chunk = {
