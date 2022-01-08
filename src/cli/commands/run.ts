@@ -25,7 +25,6 @@ export const runCommand = new Command('run')
 				bundle: true,
 				platform: 'node',
 				plugins: [resolverPlugin(), loaderPlugin()],
-				external: ['fs'],
 			})
 			.then((buildResult: esbuild.BuildResult) => {
 				console.log('✅✅✅ bundle successful');

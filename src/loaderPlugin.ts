@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild';
 import axios from 'axios';
 import fs from 'fs/promises';
-const builtins = require('module').builtinModules as string[];
+import cache from './cache';
 
 type PluginFactoryType = () => esbuild.Plugin;
 
@@ -9,11 +9,24 @@ const loaderPlugin: PluginFactoryType = () => {
 	return {
 		name: 'custom-loader-plugin',
 		setup(build: esbuild.PluginBuild) {
+			build.onLoad({ filter: /.*/, namespace: 'unpkg' }, async (args) => {
+				// if the file is cached, then return it.
+				const paths = new URL(args.path).pathname.split('/');
+				const filename = new URL(args.path).pathname.split('/')[
+					paths.length - 1
+				];
+				const cachedResult = await cache.retrieveFile(filename);
+				if (cachedResult) {
+					return {
+						contents: cachedResult,
+					};
+				}
+			});
 			build.onLoad(
 				{ filter: /^https?:\/\//, namespace: 'unpkg' },
 				async (args) => {
-					console.log('args:load: ', args);
-					const { data } = await axios.get<string>(args.path);
+					const { data, request } = await axios.get<string>(args.path);
+					await cache.writeFile(data, request.path);
 					const chunk: esbuild.OnLoadResult = {
 						loader: 'jsx',
 						contents: data,
@@ -22,18 +35,7 @@ const loaderPlugin: PluginFactoryType = () => {
 				}
 			);
 
-			build.onLoad({ filter: /.*/, namespace: 'node-file' }, async (args) => {
-				return {
-					contents: `
-        import ${args.path} from ${JSON.stringify(args.path)}
-        try { module.exports = require(${args.path}) }
-        catch {}
-      `,
-				};
-			});
-
 			build.onLoad({ filter: /.*/, namespace: 'file' }, async (args) => {
-				console.log('args===onload: ', args);
 				const contents = await fs.readFile(args.path, { encoding: 'utf-8' });
 				const chunk: esbuild.OnLoadResult = {
 					loader: 'jsx',

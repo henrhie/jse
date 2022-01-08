@@ -41,7 +41,6 @@ exports.runCommand = new commander_1.Command('run')
         bundle: true,
         platform: 'node',
         plugins: [(0, resolverPlugin_1.default)(), (0, loaderPlugin_1.default)()],
-        external: ['fs'],
     })
         .then((buildResult) => {
         console.log('✅✅✅ bundle successful');

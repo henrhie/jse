@@ -4,14 +4,11 @@ const builtins = require('module').builtinModules as string[];
 
 type PluginFactoryType = () => esbuild.Plugin;
 
-const node_native_modules = ['fs', 'path', 'event'];
-
 const resolverPlugin: PluginFactoryType = () => {
 	return {
 		name: 'custom-resolver-plugin',
 		setup(build: esbuild.PluginBuild) {
 			build.onResolve({ filter: /.*/ }, (args: esbuild.OnResolveArgs) => {
-				console.log('args:onresolve: ', args);
 				if (
 					args.path.startsWith('./') ||
 					args.path.startsWith('../') ||
@@ -35,17 +32,12 @@ const resolverPlugin: PluginFactoryType = () => {
 						namespace: 'file',
 					};
 				}
-				if (builtins.includes(args.path)) {
-					console.log('===============>called=========>', args);
+				if (!builtins.includes(args.path)) {
 					return {
-						path: require.resolve(args.path, { paths: [args.resolveDir] }),
-						namespace: 'node-file',
+						namespace: 'unpkg',
+						path: `https://unpkg.com/${args.path}`,
 					};
 				}
-				return {
-					namespace: 'unpkg',
-					path: `https://unpkg.com/${args.path}`,
-				};
 			});
 		},
 	};

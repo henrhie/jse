@@ -5,13 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const builtins = require('module').builtinModules;
-const node_native_modules = ['fs', 'path', 'event'];
 const resolverPlugin = () => {
     return {
         name: 'custom-resolver-plugin',
         setup(build) {
             build.onResolve({ filter: /.*/ }, (args) => {
-                console.log('args:onresolve: ', args);
                 if (args.path.startsWith('./') ||
                     args.path.startsWith('../') ||
                     args.kind === 'entry-point') {
@@ -27,17 +25,12 @@ const resolverPlugin = () => {
                         namespace: 'file',
                     };
                 }
-                if (builtins.includes(args.path)) {
-                    console.log('===============>called=========>', args);
+                if (!builtins.includes(args.path)) {
                     return {
-                        path: require.resolve(args.path, { paths: [args.resolveDir] }),
-                        namespace: 'node-file',
+                        namespace: 'unpkg',
+                        path: `https://unpkg.com/${args.path}`,
                     };
                 }
-                return {
-                    namespace: 'unpkg',
-                    path: `https://unpkg.com/${args.path}`,
-                };
             });
         },
     };

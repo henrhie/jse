@@ -14,31 +14,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const promises_1 = __importDefault(require("fs/promises"));
-const builtins = require('module').builtinModules;
+const cache_1 = __importDefault(require("./cache"));
 const loaderPlugin = () => {
     return {
         name: 'custom-loader-plugin',
         setup(build) {
+            build.onLoad({ filter: /.*/, namespace: 'unpkg' }, (args) => __awaiter(this, void 0, void 0, function* () {
+                // if the file is cached, then return it.
+                const paths = new URL(args.path).pathname.split('/');
+                const filename = new URL(args.path).pathname.split('/')[paths.length - 1];
+                const cachedResult = yield cache_1.default.retrieveFile(filename);
+                if (cachedResult) {
+                    return {
+                        contents: cachedResult,
+                    };
+                }
+            }));
             build.onLoad({ filter: /^https?:\/\//, namespace: 'unpkg' }, (args) => __awaiter(this, void 0, void 0, function* () {
-                console.log('args:load: ', args);
-                const { data } = yield axios_1.default.get(args.path);
+                const { data, request } = yield axios_1.default.get(args.path);
+                yield cache_1.default.writeFile(data, request.path);
                 const chunk = {
                     loader: 'jsx',
                     contents: data,
                 };
                 return chunk;
             }));
-            build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => __awaiter(this, void 0, void 0, function* () {
-                return {
-                    contents: `
-        import ${args.path} from ${JSON.stringify(args.path)}
-        try { module.exports = require(${args.path}) }
-        catch {}
-      `,
-                };
-            }));
             build.onLoad({ filter: /.*/, namespace: 'file' }, (args) => __awaiter(this, void 0, void 0, function* () {
-                console.log('args===onload: ', args);
                 const contents = yield promises_1.default.readFile(args.path, { encoding: 'utf-8' });
                 const chunk = {
                     loader: 'jsx',
