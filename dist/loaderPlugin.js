@@ -14,11 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const promises_1 = __importDefault(require("fs/promises"));
+const builtins = require('module').builtinModules;
 const loaderPlugin = () => {
     return {
         name: 'custom-loader-plugin',
         setup(build) {
             build.onLoad({ filter: /^https?:\/\//, namespace: 'unpkg' }, (args) => __awaiter(this, void 0, void 0, function* () {
+                console.log('args:load: ', args);
                 const { data } = yield axios_1.default.get(args.path);
                 const chunk = {
                     loader: 'jsx',
@@ -26,7 +28,17 @@ const loaderPlugin = () => {
                 };
                 return chunk;
             }));
-            build.onLoad({ filter: /.*/ }, (args) => __awaiter(this, void 0, void 0, function* () {
+            build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => __awaiter(this, void 0, void 0, function* () {
+                return {
+                    contents: `
+        import path from ${JSON.stringify(args.path)}
+        try { module.exports = require(path) }
+        catch {}
+      `,
+                };
+            }));
+            build.onLoad({ filter: /.*/, namespace: 'file' }, (args) => __awaiter(this, void 0, void 0, function* () {
+                console.log('args===onload: ', args);
                 const contents = yield promises_1.default.readFile(args.path, { encoding: 'utf-8' });
                 const chunk = {
                     loader: 'jsx',

@@ -33,13 +33,15 @@ exports.runCommand = new commander_1.Command('run')
     .option('-i, --input <string>', 'entry file for you experimental javascript program', 'index.js')
     .option('-o, --output <string>', 'output file for your experimental javascript program', 'output.js')
     .action(({ input, output }) => {
+    console.log('dir: ', process.cwd());
     esbuild
         .build({
         entryPoints: [input],
-        // outfile: output,
+        outfile: output,
         bundle: true,
-        outdir: process.cwd(),
+        platform: 'node',
         plugins: [(0, resolverPlugin_1.default)(), (0, loaderPlugin_1.default)()],
+        external: ['fs'],
     })
         .then((buildResult) => {
         console.log('✅✅✅ bundle successful');

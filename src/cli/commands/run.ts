@@ -9,7 +9,7 @@ export const runCommand = new Command('run')
 	.option(
 		'-i, --input <string>',
 		'entry file for you experimental javascript program',
-		'test.js'
+		'index.js'
 	)
 	.option(
 		'-o, --output <string>',
@@ -24,7 +24,6 @@ export const runCommand = new Command('run')
 				outfile: output,
 				bundle: true,
 				platform: 'node',
-				// outdir: '../' + process.cwd(),
 				plugins: [resolverPlugin(), loaderPlugin()],
 				external: ['fs'],
 			})
