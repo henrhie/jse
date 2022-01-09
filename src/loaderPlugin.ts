@@ -30,6 +30,7 @@ const loaderPlugin: PluginFactoryType = () => {
 					const chunk: esbuild.OnLoadResult = {
 						loader: 'jsx',
 						contents: data,
+						resolveDir: new URL('./', request.responseURL).pathname,
 					};
 					return chunk;
 				}
