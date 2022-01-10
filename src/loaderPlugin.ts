@@ -10,7 +10,6 @@ const loaderPlugin: PluginFactoryType = () => {
 		name: 'custom-loader-plugin',
 		setup(build: esbuild.PluginBuild) {
 			build.onLoad({ filter: /.*/, namespace: 'unpkg' }, async (args) => {
-				// if the file is cached, then return it.
 				const paths = new URL(args.path).pathname.split('/');
 				const filename = new URL(args.path).pathname.split('/')[
 					paths.length - 1
@@ -30,7 +29,6 @@ const loaderPlugin: PluginFactoryType = () => {
 					const chunk: esbuild.OnLoadResult = {
 						loader: 'jsx',
 						contents: data,
-						resolveDir: new URL('./', request.responseURL).pathname,
 					};
 					return chunk;
 				}

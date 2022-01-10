@@ -42,12 +42,6 @@ export default new (class Cache {
 		try {
 			await fs.mkdir(CACHE_DIR);
 			await fs.writeFile(path.join(CACHE_DIR, 'version_cache.json'), '{}');
-		} catch (error: any) {
-			if (error.message === 'EEXIST') {
-				return;
-			}
-		}
-		try {
 			const version_cache_ = JSON.parse(
 				await fs.readFile(path.join(CACHE_DIR, 'version_cache.json'), {
 					encoding: 'utf-8',
@@ -55,6 +49,9 @@ export default new (class Cache {
 			);
 			return version_cache_[filename] as string;
 		} catch (error: any) {
+			if (error.code === 'EEXIST') {
+				return;
+			}
 			console.error(error.message);
 		}
 	};

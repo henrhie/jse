@@ -20,7 +20,6 @@ const loaderPlugin = () => {
         name: 'custom-loader-plugin',
         setup(build) {
             build.onLoad({ filter: /.*/, namespace: 'unpkg' }, (args) => __awaiter(this, void 0, void 0, function* () {
-                // if the file is cached, then return it.
                 const paths = new URL(args.path).pathname.split('/');
                 const filename = new URL(args.path).pathname.split('/')[paths.length - 1];
                 const cachedResult = yield cache_1.default.retrieveFile(filename);
@@ -36,7 +35,6 @@ const loaderPlugin = () => {
                 const chunk = {
                     loader: 'jsx',
                     contents: data,
-                    resolveDir: new URL('./', request.responseURL).pathname,
                 };
                 return chunk;
             }));

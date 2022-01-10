@@ -7,9 +7,12 @@ export const clearCacheCommand = new Command('run')
 	.description('clear cache of unpkg packages')
 	.action(async () => {
 		try {
-			await fs.rmdir(path.join(process.cwd(), 'cache'), { recursive: true });
+			await fs.rm(path.join(process.cwd(), 'cache'), { recursive: true });
 			console.log('✔✔✔ cache cleared');
 		} catch (error: any) {
-			console.error(error.message);
+			if (error.code && error.code === 'ENOENT') {
+				console.log('cache already cleared');
+				return;
+			}
 		}
 	});

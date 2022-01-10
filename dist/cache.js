@@ -46,19 +46,15 @@ exports.default = new (class Cache {
             try {
                 yield promises_1.default.mkdir(CACHE_DIR);
                 yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), '{}');
-            }
-            catch (error) {
-                if (error.message === 'EEXIST') {
-                    return;
-                }
-            }
-            try {
                 const version_cache_ = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
                     encoding: 'utf-8',
                 }));
                 return version_cache_[filename];
             }
             catch (error) {
+                if (error.code === 'EEXIST') {
+                    return;
+                }
                 console.error(error.message);
             }
         });

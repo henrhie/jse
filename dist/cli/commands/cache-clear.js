@@ -21,10 +21,13 @@ exports.clearCacheCommand = new commander_1.Command('run')
     .description('clear cache of unpkg packages')
     .action(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield promises_1.default.rmdir(path_1.default.join(process.cwd(), 'cache'), { recursive: true });
+        yield promises_1.default.rm(path_1.default.join(process.cwd(), 'cache'), { recursive: true });
         console.log('✔✔✔ cache cleared');
     }
     catch (error) {
-        console.error(error.message);
+        if (error.code && error.code === 'ENOENT') {
+            console.log('cache already cleared');
+            return;
+        }
     }
 }));
