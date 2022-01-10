@@ -6,20 +6,23 @@ const CACHE_DIR = 'cache';
 export default new (class Cache {
 	writeFileVersion = async (versionName: string) => {
 		const filename = this.mapVersionNameTofilename(versionName);
+		try {
+			let versionCache = JSON.parse(
+				await fs.readFile(path.join(CACHE_DIR, 'version_cache.json'), {
+					encoding: 'utf-8',
+				})
+			);
 
-		let versionCache = JSON.parse(
-			await fs.readFile(path.join(CACHE_DIR, 'version_cache.json'), {
-				encoding: 'utf-8',
-			})
-		);
+			versionCache = { ...versionCache, [filename]: versionName };
 
-		versionCache = { ...versionCache, [filename]: versionName };
-
-		await fs.writeFile(
-			path.join(CACHE_DIR, 'version_cache.json'),
-			JSON.stringify(versionCache),
-			{ encoding: 'utf-8' }
-		);
+			await fs.writeFile(
+				path.join(CACHE_DIR, 'version_cache.json'),
+				JSON.stringify(versionCache),
+				{ encoding: 'utf-8' }
+			);
+		} catch (error: any) {
+			console.error(error.message);
+		}
 	};
 
 	writeFile = async (file_content: string, path_: string) => {
@@ -44,13 +47,16 @@ export default new (class Cache {
 				return;
 			}
 		}
-
-		const version_cache_ = JSON.parse(
-			await fs.readFile(path.join(CACHE_DIR, 'version_cache.json'), {
-				encoding: 'utf-8',
-			})
-		);
-		return version_cache_[filename] as string;
+		try {
+			const version_cache_ = JSON.parse(
+				await fs.readFile(path.join(CACHE_DIR, 'version_cache.json'), {
+					encoding: 'utf-8',
+				})
+			);
+			return version_cache_[filename] as string;
+		} catch (error: any) {
+			console.error(error.message);
+		}
 	};
 
 	retrieveFile = async (filename: string) => {

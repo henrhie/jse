@@ -36,6 +36,7 @@ const loaderPlugin = () => {
                 const chunk = {
                     loader: 'jsx',
                     contents: data,
+                    resolveDir: new URL('./', request.responseURL).pathname,
                 };
                 return chunk;
             }));

@@ -19,11 +19,16 @@ exports.default = new (class Cache {
     constructor() {
         this.writeFileVersion = (versionName) => __awaiter(this, void 0, void 0, function* () {
             const filename = this.mapVersionNameTofilename(versionName);
-            let versionCache = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
-                encoding: 'utf-8',
-            }));
-            versionCache = Object.assign(Object.assign({}, versionCache), { [filename]: versionName });
-            yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), JSON.stringify(versionCache), { encoding: 'utf-8' });
+            try {
+                let versionCache = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
+                    encoding: 'utf-8',
+                }));
+                versionCache = Object.assign(Object.assign({}, versionCache), { [filename]: versionName });
+                yield promises_1.default.writeFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), JSON.stringify(versionCache), { encoding: 'utf-8' });
+            }
+            catch (error) {
+                console.error(error.message);
+            }
         });
         this.writeFile = (file_content, path_) => __awaiter(this, void 0, void 0, function* () {
             try {
@@ -47,10 +52,15 @@ exports.default = new (class Cache {
                     return;
                 }
             }
-            const version_cache_ = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
-                encoding: 'utf-8',
-            }));
-            return version_cache_[filename];
+            try {
+                const version_cache_ = JSON.parse(yield promises_1.default.readFile(path_1.default.join(CACHE_DIR, 'version_cache.json'), {
+                    encoding: 'utf-8',
+                }));
+                return version_cache_[filename];
+            }
+            catch (error) {
+                console.error(error.message);
+            }
         });
         this.retrieveFile = (filename) => __awaiter(this, void 0, void 0, function* () {
             const version_name = yield this.readFileVersion(filename);
